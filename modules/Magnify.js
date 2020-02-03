@@ -6,7 +6,6 @@ function Magnify() {
   }
   this.domElement;
   this.zoomLevel;
-  this.bw = 3;
   this.wrapper;
 }
 
@@ -55,7 +54,7 @@ Object.assign(Magnify.prototype, {
     this.domElement.style.left = (x - w) + "px";
     this.domElement.style.top = (y - h) + "px";
     /*display what the magnifier glass "sees":*/
-    this.domElement.style.backgroundPosition = "-" + ((x * this.zoomLevel) - w + this.bw)/1.565 + "px -" + ((y * this.zoomLevel) - h + this.bw)/1.565 + "px";
+    this.domElement.style.backgroundPosition = "-" + ((x * this.zoomLevel) - w )/(this.zoomLevel*1.05/2) + "px -" + ((y * this.zoomLevel) - h )/(this.zoomLevel*1.05/2) + "px";
   },
 });
 
