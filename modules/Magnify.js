@@ -20,20 +20,25 @@ Object.assign(Magnify.prototype, {
      /* Create magnifier glass: */
     let parent = $(this.wrapper).parent()[0];
     let domElement = document.createElement("div");
-    
+    this.domElement = domElement;
+    this.addStyle();
+    this.addEventListeners();
+    parent.prepend(domElement);
+  },
+  addStyle: function(){
     /*set background properties for the magnifier glass:*/
-    domElement.classList.add("img-magnifier-glass");
-    domElement.style.backgroundImage = "url('" + this.wrapper.src + "')";
-    domElement.style.backgroundRepeat = "no-repeat";
-    domElement.style.backgroundSize = (domElement.width * this.zoomLevel) + "px " + (domElement.height * this.zoomLevel) + "px";
+    this.domElement.classList.add("img-magnifier-glass");
+    this.domElement.style.backgroundImage = "url('" + this.wrapper.src + "')";
+    this.domElement.style.backgroundRepeat = "no-repeat";
+    this.domElement.style.backgroundSize = (this.domElement.width * this.zoomLevel) + "px " + (this.domElement.height * this.zoomLevel) + "px";
+  },
+  addEventListeners: function(){
     /*execute a function when someone moves the magnifier glass over the image:*/
-    domElement.addEventListener("mousemove", ()=> this.moveMagnifier());
+    this.domElement.addEventListener("mousemove", ()=> this.moveMagnifier());
     this.wrapper.mousemove = ()=> this.moveMagnifier();
     /*and also for touch screens:*/
-    domElement.addEventListener("touchmove", () => this.moveMagnifier());
+    this.domElement.addEventListener("touchmove", () => this.moveMagnifier());
     this.wrapper.touchmove = ()=>this.moveMagnifier();
-    this.domElement = domElement;
-    parent.prepend(domElement);
   },
   moveMagnifier: function(){
     let w = this.domElement.offsetWidth / 2;
@@ -42,20 +47,27 @@ Object.assign(Magnify.prototype, {
     event.preventDefault();
     /*get the cursor's x and y positions:*/
     let positions = new CursorPos();
-    let pos = positions.getCursorPos(event, this.wrapper);
-    let x = pos.x;
-    let y = pos.y;
+    let pos = positions.getCursorPos(event, this.wrapper.getBoundingClientRect());
+    let recalibration = this.recalibratePositions(pos.x, pos.y, w, h);
+    let x = recalibration.x;
+    let y = recalibration.y;
+    this.updateMagnifier(x, y, w, h);
+  },
+  recalibratePositions: function(x, y, w, h){
     /*prevent the magnifier glass from being positioned outside the image:*/
     if (x > this.wrapper.width - (w / this.zoomLevel)) {x = this.wrapper.width - (w / this.zoomLevel);}
     if (x < w / this.zoomLevel) {x = w / this.zoomLevel;}
     if (y > this.wrapper.height - (h / this.zoomLevel)) {y = this.wrapper.height - (h / this.zoomLevel);}
     if (y < h / this.zoomLevel) {y = h / this.zoomLevel;}
+    return {x : x, y : y}
+  },
+  updateMagnifier: function(x, y, w, h){
     /*set the position of the magnifier glass:*/
     this.domElement.style.left = (x - w) + "px";
     this.domElement.style.top = (y - h) + "px";
     /*display what the magnifier glass "sees":*/
     this.domElement.style.backgroundPosition = "-" + ((x * this.zoomLevel) - (w + this.zoomLevel) )/(this.zoomLevel*1.04/2) + "px -" + ((y * this.zoomLevel) - (h + this.zoomLevel) )/(this.zoomLevel*1.04/2) + "px";
-  },
+  }
 });
 
 export { Magnify };
