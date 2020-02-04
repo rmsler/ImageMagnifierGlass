@@ -1,12 +1,7 @@
-function CursorPos() {
-    if (!(this instanceof CursorPos)) {
-      return new CursorPos();
-    }
-    this.dimensions;
-  }
+function CursorPos() {}
   
 Object.assign(CursorPos.prototype, {
-    getCursorPos: function(element, imageDimensions) {
+    _getCursorPos: function(element, imageDimensions) {
         let xPos = 0, yPos = 0;
         /*calculate the cursor's xPos and yPos coordinates, relative to the image:*/
         xPos = element.pageX - imageDimensions.left;
@@ -14,8 +9,7 @@ Object.assign(CursorPos.prototype, {
         /*consider any page scrolling:*/
         xPos = xPos - window.pageXOffset;
         yPos = yPos - window.pageYOffset;
-        this.dimensions = {x : xPos, y : yPos};
-        return this.dimensions;
+        return {x : xPos, y : yPos};
     }
 })
 

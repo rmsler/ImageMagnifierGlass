@@ -9,7 +9,9 @@ function Magnify() {
   this.wrapper;
 }
 
+Magnify.prototype = Object.create(CursorPos.prototype);
 Object.assign(Magnify.prototype, {
+  constructor: Magnify,
   init: function(imgID, zoomLevel) {
     this.zoomLevel = zoomLevel;
     this.wrapper = $(imgID)[0];
@@ -46,8 +48,7 @@ Object.assign(Magnify.prototype, {
     /*prevent any other actions that may occur when moving over the image*/
     event.preventDefault();
     /*get the cursor's x and y positions:*/
-    let positions = new CursorPos();
-    let pos = positions.getCursorPos(event, this.wrapper.getBoundingClientRect());
+    let pos = this._getCursorPos(event, this.wrapper.getBoundingClientRect());
     let recalibration = this.recalibratePositions(pos.x, pos.y, w, h);
     let x = recalibration.x;
     let y = recalibration.y;
